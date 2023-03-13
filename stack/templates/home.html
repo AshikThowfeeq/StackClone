@@ -1,0 +1,98 @@
+{%extends 'base.html'%}
+{%block body%}
+
+<!-- start question section -->
+<div class="card text-bg-dark mb-3" style="max-width: 100%;">
+    <div class="card-header">
+        {%if request.user.profile.profile_pic%}
+
+            <img src="{{request.user.profile.profile_pic.url}}" class="rounded-circle" style="height: 80px;"  alt="...">
+
+        {%endif%}
+
+        {{request.user}}
+    
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">Post a new Question</h5>
+        <p class="card-text">
+            <form action="" method="post" enctype="multipart/form-data">
+            {%csrf_token%}
+
+            <textarea name="description" id="" cols="30" rows="10" class="form-control"></textarea>
+
+            <button type="submit">Add</button>
+            </form>
+        </p>
+    </div>
+  </div>
+<!-- end question section -->
+
+{%if request.user.profile%}
+<a href="{%url 'profile-view'%}">ViewProfile</a>
+<a href="{%url 'profile-update' request.user.profile.id%}">UpdateProfile</a>
+{%else%}
+<a href="{%url 'profile-add'%}">AddProfile</a>
+{%endif%}
+
+<h1>Welcome User {{request.user}}</h1>
+
+<!-- start of question form -->
+<div class="container">
+<div class="row">
+    <div class="col-4"></div>
+    <div class="col-4">
+        <form action="" method="post" enctype="multipart/form-data">
+            {%csrf_token%}
+            {{form.as_p}}
+            <button type="submit" class="btn btn-info">Add</button>
+        </form>
+    </div>
+    <div class="col-4"></div>
+</div>
+</div>
+<!-- end of question form -->
+
+<!-- start of question list -->
+{%for q in questions%}
+<div class="container">
+    {{q.description}}
+
+    {%if q.image%}
+        <img src="{{q.image.url}}" alt="">
+    {%endif%}
+
+    asked by {{q.user}} on {{q.created_date}}
+
+</div> 
+<!-- end of question list -->
+
+
+<!-- start of answer textbox -->
+<div class="container">
+    <h4>Add Your Answer</h4>
+    <form action="{%url 'add-answer' q.id%}" method="post">
+        {%csrf_token%}
+        <input type="text" placeholder="Enter Your Answer" name="answer">
+        <button type="submit">Add</button>
+    </form>
+</div>
+<!-- end of answer textbox -->
+
+<!-- start of answer list -->
+<div class="container">
+    <h3><u>Answers</u></h3>
+
+    {%for ans in q.question_answers%}
+    <div>
+        {{ans.answer}} posted by {{ans.user}} on {{ans.created_date}} <a href="{%url 'upvote' ans.id%}">upvote</a> ({{ans.upvote_count}})
+    </div>
+    {%endfor%}
+
+</div>
+<!-- end of answer list -->
+
+<hr>
+{%endfor%}
+
+{%endblock%}
